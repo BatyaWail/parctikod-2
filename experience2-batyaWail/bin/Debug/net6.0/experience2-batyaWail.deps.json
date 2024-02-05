@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "experience2-batyaWail/1.0.0": {
+        "runtime": {
+          "experience2-batyaWail.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "experience2-batyaWail/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
