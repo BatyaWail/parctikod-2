@@ -8,65 +8,95 @@ async Task<string> Load(string url)
     return html;
 }
 
-var html = await Load("https://learn.malkabruk.co.il/practicode/projects/pract-2/#_2");
+var html = await Load("https://hebrewbooks.org/beis");
 var cleanHtml = new Regex("\\s+").Replace(html, "");
 var htmlLines = new Regex("<(.*?)>").Split(cleanHtml).Where(p => p.Length > 0).ToList();
 Console.WriteLine();
 HtmlElement root = new HtmlElement();
-HtmlElement currentTag = new HtmlElement();
+HtmlElement currentTag = root;
+string id, classes;
 foreach(var line in htmlLines)
 {
-    if (line == "/html")
+
+    string[] tagName = line.Split(" ");
+    if (line.StartsWith("/html"))
         break;
     if (line.StartsWith("/"))
     {
-        
-    }
-    string word="", newLine;
-    int index = line.IndexOf("=");
-    bool isAlone = false;
-    if ( index> 0)
-    {
-        word = line.Substring(0, index);
-        isAlone = false;
+        currentTag = currentTag.Parent;
     }
     else
     {
-        word = line;
-        isAlone = true;
-    }
-    if (HtmlHelper.Instance.htmlTags.ToList().Find(l => l==word)!=null)
-    {
-        HtmlElement temp = new HtmlElement();
-        temp.Name = word;
-        if (!isAlone)
+        if (HtmlHelper.Instance.htmlTags.Contains(tagName[0]) || HtmlHelper.Instance.htmlVoidTags.Contains(tagName[0]))
         {
-            newLine = line.Substring(index, line.Length - 1);
-            var attributes = new Regex("([^\\s]*?)=\"(.*?)\"").Matches(newLine);
-            string name = "", value = "";
-            foreach (string a in attributes)
+            HtmlElement htmlElement = new HtmlElement();
+            htmlElement.Name = tagName[0];
+            currentTag.Children.Add(htmlElement);
+            htmlElement.Parent = currentTag;
+            if (line.IndexOf(" ", 0) != -1)
             {
-                name = a.Substring(0, a.IndexOf("="));
-                value = a.Substring(a.IndexOf("=") + 3, a.Length - 2);
-                if (name == "ID" || name == "id")
+                int index;
+                string attribute;
+                attribute = line.Substring(line.IndexOf(" ", 0));
+
+                var attributes = new Regex("([^\\s]*?)=\"(.*?)\"").Matches(attribute);
+                string result = "";
+                foreach (var att in attributes)
                 {
-                    temp.Id = value;
+                    foreach (var attr in att.ToString())
+                    {
+                        if (!(attr.Equals('\\') || attr.Equals('"')))
+                            result += attr;
+                    }
+                    currentTag.Attributes.Add(result);
+
+                    //if (att.ToString().IndexOf("id=", 0) != -1)
+                    //{
+                    //    index = att.ToString().IndexOf("id=", 0);
+                    //    currentElement.Id = att.ToString().Substring(index+3);
+                    //}
+                    //if (att.ToString().IndexOf("class=", 0) != -1)
+                    //{
+
+                    //}
+
                 }
-                else if (name == "class")
+                if (currentTag.Attributes.Count > 0)
                 {
-                    temp.Classes = value.Split().ToList();
+                    id = currentTag.Attributes.Find((f) => f.Contains("id="));
+                    if (id != null)
+                        currentTag.Id = id.Substring(3);
+                    classes = currentTag.Attributes.Find((f) => f.Contains("class="));
+                    if (classes != null)
+                    {
+                        classes = classes.Substring(6);
+                        string[] s = classes.Split(" ");
+                        foreach (string s2 in s)
+                        {
+                            currentTag.Classes.Add(s2);
+                        }
+                    }
+
                 }
-                else
-                {
-                    temp.Attributes.Add(new Attributes() { Key = name, Value = value });
-                }
+
+            }
+            if (!(line.EndsWith("/") && HtmlHelper.Instance.htmlVoidTags.Contains(line)))
+            {
+                currentTag = htmlElement;
             }
         }
-        currentTag.Children.Add(temp);
-
+        else
+        {
+            currentTag.InnerHtml = line;
+        }
     }
-
-
 
 
 }
+Console.WriteLine(root);
+Console.WriteLine("------------------");
+
+Selector Selector=new Selector();
+Selector.SavingQueryString("div#mydiv .class-name");
+
+
