@@ -173,17 +173,26 @@ static HtmlElement ParseHtml(string htmlString)
 
     return rootElement;
 }
-Console.WriteLine(ParseHtml(html));
-Console.WriteLine("------------------");
-
-Selector Selector=new Selector();
-Selector.SavingQueryString("div#mydiv .class-name");
 static async Task<string> Load(string url)
 {
     HttpClient client = new HttpClient();
     var response = await client.GetAsync(url);
     var html = await response.Content.ReadAsStringAsync();
     return html;
+}
+//Console.WriteLine(ParseHtml(html));
+HtmlElement root=ParseHtml(html);
+Console.WriteLine("------------------");
+
+Selector Selector=new Selector();
+Selector s= Selector.SavingQueryString("div#mydiv .class-name");
+HtmlElement htmlElement = new HtmlElement();
+List<HtmlElement> result=new List<HtmlElement>();
+List<HtmlElement> elements = htmlElement.FindElementsRec(root,s, result);
+foreach (HtmlElement element in elements)
+{
+    // Do whatever you need with the found elements
+    Console.WriteLine(element.Id);
 }
 
 

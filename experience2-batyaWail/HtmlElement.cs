@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace experience2_batyaWail
 {
-    internal class HtmlElement
+    public class HtmlElement
     {
-        public string Id { get; set; }//????מאיפה מגיע
+        public string Id { get; set; }
         public string Name { get; set; }
         //public List<Attributes> Attributes { get; set; }
         public List<string> Attributes { get; set; }
@@ -22,6 +22,31 @@ namespace experience2_batyaWail
             Attributes = new List<string>();
             Children = new List<HtmlElement>();
         }
+        public IEnumerable<HtmlElement> Descendants()
+        {
+            Queue<HtmlElement> queueElements = new Queue<HtmlElement>();
+            queueElements.Enqueue(this);
+            while (queueElements.Count > 0)
+            {
+                HtmlElement element = queueElements.Dequeue();
+                yield return element;
+                foreach(HtmlElement child in element.Children)
+                {
+                    queueElements.Enqueue(child);
+                }
+            }
+        }
+
+        public IEnumerable<HtmlElement> Ancestors()
+        {
+            HtmlElement currentElement = this;
+            while (currentElement.Parent != null)
+            {
+                currentElement = currentElement.Parent;
+                yield return currentElement;
+            }
+        }
+
 
 
     }
