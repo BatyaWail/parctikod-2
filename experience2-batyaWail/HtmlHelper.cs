@@ -11,16 +11,16 @@ namespace experience2_batyaWail
     {
         private readonly static HtmlHelper _instance = new HtmlHelper();
         public static HtmlHelper Instance => _instance;
-        public string[] htmlTags { get; set; }
-        public string[] htmlVoidTags { get; set; }
+        public string[] HtmlTags { get; set; }
+        public string[] HtmlVoidTags { get; set; }
 
 
         private HtmlHelper()
         {
             var allHtmlTags = File.ReadAllText("HtmlTags.json");
             var htmlTagsWithoutClose = File.ReadAllText("HtmlVoidTags.json");
-            htmlTags = JsonSerializer.Deserialize<string[]>(allHtmlTags);
-            htmlVoidTags = JsonSerializer.Deserialize<string[]>(htmlTagsWithoutClose);
+            HtmlTags = JsonSerializer.Deserialize<string[]>(allHtmlTags);
+            HtmlVoidTags = JsonSerializer.Deserialize<string[]>(htmlTagsWithoutClose);
         }
 
     }

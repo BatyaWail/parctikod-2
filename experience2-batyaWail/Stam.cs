@@ -6,38 +6,25 @@ using System.Threading.Tasks;
 
 namespace experience2_batyaWail
 {
-    public class Selector
+    internal class Stam
     {
-        /*
-          TagName
-          Id
-          Classes (רשימה)
-         */
-        public string TagName { get; set; }
-        public string Id { get; set; }
-        public List<string> Classes { get; set; }=new List<string>();
-        public Selector Parent { get; set; }
-        public Selector Child { get; set; }
-
-
         public static Selector SavingQueryString(string query)
         {
             List<string> queryList = query.Split(" ").ToList();
-            Selector root=new Selector();
+            Selector root = new Selector();
             Selector currentSelector = new Selector();
             string result = "";
             bool isFirst = true;
-
             foreach (string s in queryList)
             {
                 Selector temp = new Selector();
                 List<string> list = new List<string>();
-                
-                
+
+
                 foreach (char c in s)
                 {
                     //"div#mydiv .class-name”
-                    
+
                     if (c == '#' || c == '.')
                     {
                         if (result.Length > 0)
@@ -62,7 +49,7 @@ namespace experience2_batyaWail
                 }
 
                 currentSelector.Child = temp;
-                temp.Parent=currentSelector;
+                temp.Parent = currentSelector;
                 if (isFirst)
                 {
                     root = temp;
@@ -84,60 +71,5 @@ namespace experience2_batyaWail
             return root;
 
         }
-
-        //menuchi
-        //public static selector fromquerystring(string selector)
-        //{
-        //    selector current = new selector();
-        //    bool flag = false;
-        //    string[] tagandid = null;
-        //    if (selector.contains("#"))
-        //    {
-        //        tagandid = selector.split('#');
-        //        current.tagname = tagandid[0];
-        //        selector = tagandid[1];
-        //        flag = true;
-        //    }
-        //    if (selector.contains("."))
-        //    {
-        //        current.classes = new list<string>();
-        //        string[] idandclass = selector.split('.');
-        //        if (htmlhelper.instance.ishtmltag(idandclass[0]))
-        //        {
-        //            current.tagname = idandclass[0];
-        //        }
-
-        //        if (idandclass.length >= 2)
-        //        {
-        //            int i = 0;
-        //            if (flag)
-        //            {
-        //                current.id = idandclass[0];
-        //                i = 1;
-        //            }
-        //            if (current.tagname != "")
-        //                i = 1;
-        //            for (; i < idandclass.length; i++)
-        //            {
-        //                current.classes.add(idandclass[i]);
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (tagandid == null)
-        //            current.tagname = selector;
-        //        else if (tagandid.length == 2)
-        //            current.id = tagandid[1];
-        //    }
-
-        //    return current;
-
-        //}
-       
     }
 }
-       
-
- 
-
