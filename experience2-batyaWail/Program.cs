@@ -1,8 +1,14 @@
 ﻿using experience2_batyaWail;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
-var html = await Load("https://hebrewbooks.org/beis");
-
+static async Task<string> Load(string url)
+{
+    HttpClient client = new HttpClient();
+    var response = await client.GetAsync(url);
+    var html = await response.Content.ReadAsStringAsync();
+    return html;
+}
 static HtmlElement ParseHtml(string htmlString)
 {
     string id, cla;
@@ -88,54 +94,33 @@ static HtmlElement ParseHtml(string htmlString)
 
     return rootElement;
 }
-static async Task<string> Load(string url)
-{
-    HttpClient client = new HttpClient();
-    var response = await client.GetAsync(url);
-    var html = await response.Content.ReadAsStringAsync();
-    return html;
-}
-static void PrintHtmlElements(HashSet<HtmlElement> elements)
+static void PrintHashSetHtmlElements(HashSet<HtmlElement> elements)
 {
     foreach (var element in elements)
     {
         Console.WriteLine($"Tag Name: {element.Name}, ID: {element.Id}, Classes: {string.Join(", ", element.Classes)}, innerHtml: {element.InnerHtml}");
     }
 }
-
-//Console.WriteLine(ParseHtml(html));
+static void PrintListHtmlElements(List<HtmlElement> elements)
+{
+    foreach (var element in elements)
+    {
+        Console.WriteLine($"Tag Name: {element.Name}, ID: {element.Id}, Classes: {string.Join(", ", element.Classes)}, innerHtml: {element.InnerHtml}");
+    }
+}
+Console.WriteLine("----build the tree-parse html----");
+var html = await Load("https://hebrewbooks.org/beis");
 HtmlElement root =ParseHtml(html);
-List<HtmlElement> htmlElements = root.Descendants().ToList();
-List<HtmlElement> htmls = root.Children[0].Children[0].Ancestors().ToList();
-
-Console.WriteLine("-------html-----------");
-
-Selector Selector=new Selector();
-Selector s= Selector.SavingQueryString("div");
-HtmlElement htmlElement = new HtmlElement();
-Console.WriteLine("-----------1-------");
-
-List<HtmlElement> result=new List<HtmlElement>();
-Console.WriteLine("--------2----------");
-
-//HashSet<HtmlElement> elements = root.GetElementsBySelector(s);
-//List<HtmlElement> elements = root.FindElementsRec(s,result);
-
-HashSet<HtmlElement> all = root.FindElements(s);
-//var all1 = root.FindElementsRec(s);
-//foreach (var item in all)
-//{
-//    Console.WriteLine(item.InnerHtml + "\n ");
-//}
-PrintHtmlElements(all);
-
-Console.WriteLine("----------3--------");
-
-//foreach (HtmlElement element in elements)
-//{
-//    // Do whatever you need with the found elements
-//    Console.WriteLine(element.Id);
-//}
-
-
-
+Console.WriteLine("----selectors----");
+Selector selector1 = Selector.SavingQueryString("div");//21
+Selector selector2 = Selector.SavingQueryString("div h2");//2
+Selector selector3 = Selector.SavingQueryString("#outer form .mast");//1
+Console.WriteLine("----descendants----");
+List<HtmlElement> descendants = root.Descendants().ToList();
+PrintListHtmlElements(descendants);
+Console.WriteLine("----ancestors----");
+List<HtmlElement> ancestors = root.Children[0].Children[0].Ancestors().ToList();
+PrintListHtmlElements(ancestors);
+Console.WriteLine("----find element (or elements list) from selector----");
+HashSet<HtmlElement> all = root.FindElements(selector3);
+PrintHashSetHtmlElements(all);
