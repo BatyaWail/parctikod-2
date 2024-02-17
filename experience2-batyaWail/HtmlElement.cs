@@ -15,7 +15,7 @@ namespace experience2_batyaWail
         public List<string> Classes { get; set; } = new List<string>();
         public string InnerHtml { get; set; }
         public HtmlElement Parent { get; set; }
-        public List<HtmlElement> Children { get; set; }
+        public List<HtmlElement> Children { get; set; } = new List<HtmlElement>();
         //public HtmlElement Children { get; set; }
         public HtmlElement()
         {
@@ -30,12 +30,13 @@ namespace experience2_batyaWail
             {
                 HtmlElement element = queueElements.Dequeue();
                 yield return element;
-                foreach(HtmlElement child in element.Children)
+                foreach (HtmlElement child in element.Children)
                 {
                     queueElements.Enqueue(child);
                 }
             }
         }
+
 
         public IEnumerable<HtmlElement> Ancestors()
         {

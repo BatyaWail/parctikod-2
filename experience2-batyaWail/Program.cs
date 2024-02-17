@@ -3,91 +3,6 @@ using System.Text.RegularExpressions;
 
 var html = await Load("https://hebrewbooks.org/beis");
 
-//var html = await Load("https://hebrewbooks.org/beis");
-//var cleanHtml = new Regex("\\s+").Replace(html, "");
-//var htmlLines = new Regex("<(.*?)>").Split(cleanHtml).Where(p => p.Length > 0).ToList();
-//Console.WriteLine();
-//HtmlElement root = new HtmlElement();
-//HtmlElement currentTag = root;
-//string id, classes;
-//foreach(var line in htmlLines)
-//{
-
-//    string[] tagName = line.Split(" ");
-//    if (line.StartsWith("/html"))
-//        break;
-//    if (line.StartsWith("/"))
-//    {
-//        currentTag = currentTag.Parent;
-//    }
-//    else
-//    {
-//        if (HtmlHelper.Instance.htmlTags.Contains(tagName[0]) || HtmlHelper.Instance.htmlVoidTags.Contains(tagName[0]))
-//        {
-//            HtmlElement htmlElement = new HtmlElement();
-//            htmlElement.Name = tagName[0];
-//            currentTag.Children.Add(htmlElement);
-//            htmlElement.Parent = currentTag;
-//            if (line.IndexOf(" ", 0) != -1)
-//            {
-//                int index;
-//                string attribute;
-//                attribute = line.Substring(line.IndexOf(" ", 0));
-
-//                var attributes = new Regex("([^\\s]*?)=\"(.*?)\"").Matches(attribute);
-//                string result = "";
-//                foreach (var att in attributes)
-//                {
-//                    foreach (var attr in att.ToString())
-//                    {
-//                        if (!(attr.Equals('\\') || attr.Equals('"')))
-//                            result += attr;
-//                    }
-//                    currentTag.Attributes.Add(result);
-
-//                    //if (att.ToString().IndexOf("id=", 0) != -1)
-//                    //{
-//                    //    index = att.ToString().IndexOf("id=", 0);
-//                    //    currentElement.Id = att.ToString().Substring(index+3);
-//                    //}
-//                    //if (att.ToString().IndexOf("class=", 0) != -1)
-//                    //{
-
-//                    //}
-
-//                }
-//                if (currentTag.Attributes.Count > 0)
-//                {
-//                    id = currentTag.Attributes.Find((f) => f.Contains("id="));
-//                    if (id != null)
-//                        currentTag.Id = id.Substring(3);
-//                    classes = currentTag.Attributes.Find((f) => f.Contains("class="));
-//                    if (classes != null)
-//                    {
-//                        classes = classes.Substring(6);
-//                        string[] s = classes.Split(" ");
-//                        foreach (string s2 in s)
-//                        {
-//                            currentTag.Classes.Add(s2);
-//                        }
-//                    }
-
-//                }
-
-//            }
-//            if (!(line.EndsWith("/") && HtmlHelper.Instance.htmlVoidTags.Contains(line)))
-//            {
-//                currentTag = htmlElement;
-//            }
-//        }
-//        else
-//        {
-//            currentTag.InnerHtml = line;
-//        }
-//    }
-
-
-//}
 static HtmlElement ParseHtml(string htmlString)
 {
     string id, cla;
@@ -180,20 +95,47 @@ static async Task<string> Load(string url)
     var html = await response.Content.ReadAsStringAsync();
     return html;
 }
+static void PrintHtmlElements(HashSet<HtmlElement> elements)
+{
+    foreach (var element in elements)
+    {
+        Console.WriteLine($"Tag Name: {element.Name}, ID: {element.Id}, Classes: {string.Join(", ", element.Classes)}, innerHtml: {element.InnerHtml}");
+    }
+}
+
 //Console.WriteLine(ParseHtml(html));
-HtmlElement root=ParseHtml(html);
-Console.WriteLine("------------------");
+HtmlElement root =ParseHtml(html);
+List<HtmlElement> htmlElements = root.Descendants().ToList();
+List<HtmlElement> htmls = root.Children[0].Children[0].Ancestors().ToList();
+
+Console.WriteLine("-------html-----------");
 
 Selector Selector=new Selector();
-Selector s= Selector.SavingQueryString("div#mydiv .class-name");
+Selector s= Selector.SavingQueryString("div");
 HtmlElement htmlElement = new HtmlElement();
+Console.WriteLine("-----------1-------");
+
 List<HtmlElement> result=new List<HtmlElement>();
-List<HtmlElement> elements = htmlElement.FindElementsRec(root,s, result);
-foreach (HtmlElement element in elements)
-{
-    // Do whatever you need with the found elements
-    Console.WriteLine(element.Id);
-}
+Console.WriteLine("--------2----------");
+
+//HashSet<HtmlElement> elements = root.GetElementsBySelector(s);
+//List<HtmlElement> elements = root.FindElementsRec(s,result);
+
+HashSet<HtmlElement> all = root.FindElements(s);
+//var all1 = root.FindElementsRec(s);
+//foreach (var item in all)
+//{
+//    Console.WriteLine(item.InnerHtml + "\n ");
+//}
+PrintHtmlElements(all);
+
+Console.WriteLine("----------3--------");
+
+//foreach (HtmlElement element in elements)
+//{
+//    // Do whatever you need with the found elements
+//    Console.WriteLine(element.Id);
+//}
 
 
 
